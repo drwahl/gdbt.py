@@ -2,13 +2,13 @@
 
 import os, time, subprocess, sys, bluetooth
 
-mac = 'D4:88:90:87:70:90'
+bt_addr = ''
 
-def btconnect(mac):
+def btconnect(bt_addr):
     """ connect to target bluetooth device """
 
     sock = bluetooth.BluetoothSocket( bluetooth.RFCOMM )
-    sock.connect((mac, 1))
+    sock.connect((bt_addr, 1))
 
     sock.send('hello!!')
 
@@ -22,16 +22,16 @@ def btdisconnect(socket):
 if __name__ == "__main__":
     """ mainline command """
 
-    if not mac:
+    if not bt_addr:
         try:
-            mac = sys.argv1
+            bt_addr = sys.argv1
         except KeyError:
-            mac = raw_input('Bluetooth address: ')
-        if not mac:
-            print 'Unable to determine target bluetooth mac address'
+            bt_addr = raw_input('Bluetooth address: ')
+        if not bt_addr:
+            print 'Unable to determine target bluetooth address'
             sys.exit(1)
 
-    socket = btconnect(mac)        
+    socket = btconnect(bt_addr)
     print 'Disconnecting in 2 seconds'
     time.sleep(2)
     btdisconnect(socket)
