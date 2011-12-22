@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#/usr/bin/env python
 
-import os, time, subprocess, sys, bluetooth, logging
+import os, time, subprocess, sys, bluetooth, logging, argparse
 
-bt_addr = ''
+gdbt_addr = ''
 timeout = 2
 
 # logging setup
@@ -52,22 +52,19 @@ def btdisconnect(socket):
 if __name__ == "__main__":
     """ mainline command """
 
-    if not bt_addr:
-        log.debug("bt_addr not set, trying sys.argv[1]")
-        try:
-            bt_addr = sys.argv[1]
-        except IndexError:
-            log.debug("bt_addr not supplied at sys.argv[1], prompting for input")
-            bt_addr = raw_input('Bluetooth address: ')
-        if not bt_addr:
-            log.debug("bt_addr not supplied at prompt, giving up")
-            log.WARN("Unable to determine target bluetooth address")
-            sys.exit(1)
+    parser = argparse.ArgumentParser(description='This is the GD Bluetooth application')
+    parser.add_argument('-gd', help='use stored Garage Door BTaddr')
+    parser.add_argument('-o',action='store', dest='gdbt_addr', default=None, help='Open Garage door') 
+    parser.add_argument('-dev',action='store', dest='devbt_addr', help='Client Device')
+    parser.add_argument('-v','--version', action='version', version='%(prog)s .010')
+    args = parser.parse_args()
 
-    socket = btconnect(bt_addr)
-    log.info("Disconnecting in %i seconds" % timeout)
-    time.sleep(timeout)
-    btdisconnect(socket)
-    log.info("Garage door toggled")
-    log.debug("Closing log")
-    sys.exit(0)
+    if args.gdbt_addr:
+	bt_addr = args.gdbt_addr
+    	socket = btconnect(bt_addr)
+    	log.info("Disconnecting in %i seconds" % timeout)
+    	time.sleep(timeout)
+    	btdisconnect(socket)
+    	log.info("Garage door toggled")
+    	log.debug("Closing log")
+    	sys.exit(0)
