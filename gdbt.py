@@ -1,7 +1,7 @@
 #/usr/bin/env python
 
 import os, time, subprocess, sys, bluetooth, logging, argparse
-
+from bluetooth import *
 gdbt_addr = ''
 timeout = 2
 
@@ -49,6 +49,23 @@ def btdisconnect(socket):
     socket.close()
     log.debug("socket closed")
 
+def discover(bt_addr):
+    """search for target address"""
+    print "performing inquiry..."
+    nearby_devices = bluetooth.discover_devices(lookup_names = True)
+    print "Found %d devices" % len(nearby_devices)
+    
+    for addr, name in neaby_devices:
+        print " %s - %s" % (addr, name)
+
+def valid_bt_addr(string):
+    value = str(string)
+    valid = is_valid_address(value)
+    if valid != True:
+	msg = "%r is not a valid bluetooth address" % string
+	raise argparse.ArgumentTypeError(msg)
+    return value
+
 if __name__ == "__main__":
     """ mainline command """
 
@@ -59,12 +76,18 @@ if __name__ == "__main__":
     parser.add_argument('-v','--version', action='version', version='%(prog)s .010')
     args = parser.parse_args()
 
-    if args.gdbt_addr:
+    if args.gdbt_addr: 
+	valid_bt_addr(args.gdbt_addr)
 	bt_addr = args.gdbt_addr
     	socket = btconnect(bt_addr)
     	log.info("Disconnecting in %i seconds" % timeout)
     	time.sleep(timeout)
-    	btdisconnect(socket)
+      	btdisconnect(socket)
     	log.info("Garage door toggled")
     	log.debug("Closing log")
     	sys.exit(0)
+    if args.devbt_addr:
+        bt_addr = args.devbt_addr
+        socket = btconnect(bt_addr)
+        log.info("Connected to BT device")
+        sys.exit(0)
