@@ -71,13 +71,12 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='This is the GD Bluetooth application')
     parser.add_argument('-gd', help='use stored Garage Door BTaddr')
-    parser.add_argument('-o',action='store', dest='gdbt_addr', default=None, help='Open Garage door') 
+    parser.add_argument('-o',action='store', dest='gdbt_addr', type=valid_bt_addr, help='Open Garage door') 
     parser.add_argument('-dev',action='store', dest='devbt_addr', help='Client Device')
     parser.add_argument('-v','--version', action='version', version='%(prog)s .010')
     args = parser.parse_args()
 
     if args.gdbt_addr: 
-	valid_bt_addr(args.gdbt_addr)
 	bt_addr = args.gdbt_addr
     	socket = btconnect(bt_addr)
     	log.info("Disconnecting in %i seconds" % timeout)
